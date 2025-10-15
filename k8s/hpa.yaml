@@ -1,0 +1,46 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-demo-api
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hpa-demo-api
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50  # Skaluj gdy średnie CPU > 50%
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70  # Skaluj gdy średnia pamięć > 70%
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0  # Natychmiastowy scale-up
+      policies:
+      - type: Percent
+        value: 100      # Podwój liczbę podów
+        periodSeconds: 15
+      - type: Pods
+        value: 4        # Lub dodaj max 4 pody naraz
+        periodSeconds: 15
+      selectPolicy: Max  # Wybierz większą wartość
+    scaleDown:
+      stabilizationWindowSeconds: 300  # Czekaj 5 minut przed scale-down
+      policies:
+      - type: Percent
+        value: 50       # Zmniejsz o 50%
+        periodSeconds: 60
+      - type: Pods
+        value: 2        # Lub usuń max 2 pody naraz
+        periodSeconds: 60
+      selectPolicy: Min  # Wybierz mniejszą wartość (bardziej konserwatywne)
