@@ -5,7 +5,7 @@ Production-ready demonstration of Kubernetes Horizontal Pod Autoscaler (HPA) wit
 ## What This Does
 
 Demonstrates Kubernetes auto-scaling behavior under realistic CPU load:
-- Flask API with CPU-intensive endpoint
+- FastAPI with CPU-intensive endpoint
 - HPA configured for 50% CPU target (1-10 pods)
 - k6 load test with ramping VUs (0→100→0)
 - Prometheus + Grafana for real-time metrics
@@ -53,7 +53,7 @@ kubectl get hpa -w
 ## Architecture
 
 ```
-k6 (100 VUs) → Service → HPA (1-10 pods) → Flask API
+k6 (100 VUs) → Service → HPA (1-10 pods) → FastAPI
                           ↓
                     Prometheus + Grafana
 ```
@@ -77,7 +77,7 @@ k6 (100 VUs) → Service → HPA (1-10 pods) → Flask API
 
 ```
 app/
-  main.py           # Flask API with /stress endpoint
+  main.py           # FastAPI with /stress endpoint
 k8s/
   deployment.yaml   # Pod resources & probes
   hpa.yaml         # HPA config (50% CPU target)
